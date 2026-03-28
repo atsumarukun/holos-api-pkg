@@ -1,0 +1,21 @@
+{
+  "dockerComposeFile": ["../docker-compose.yml"],
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "postAttachCommand": "git config --global --add safe.directory /workspace",
+  "containerEnv": {
+    "SHELL": "/bin/bash"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "git.openRepositoryInParentFolders": "always"
+      },
+      "extensions": [
+        "shardulm94.trailing-spaces",
+        "bierner.markdown-mermaid",
+        "golang.Go"
+      ]
+    }
+  }
+}

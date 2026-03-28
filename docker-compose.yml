@@ -1,0 +1,9 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: build/package/Dockerfile
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    tty: true

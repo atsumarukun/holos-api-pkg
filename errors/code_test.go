@@ -26,7 +26,7 @@ func TestErrorCode_String(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			result := tt.input.String()
 			if result != tt.expect {
-				t.Errorf("expect %s, but got %s", tt.expect, result)
+				t.Errorf("expected %s, but got %s", tt.expect, result)
 			}
 		})
 	}

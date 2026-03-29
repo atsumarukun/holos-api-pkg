@@ -24,6 +24,10 @@ linters:
     errcheck:
       check-type-assertions: true
       check-blank: true
+      exclude-functions:
+        - fmt.Fprint
+        - fmt.Fprintf
+        - fmt.Fprintln
     goconst:
       min-len: 3
       min-occurrences: 3

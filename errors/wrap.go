@@ -10,6 +10,9 @@ type wrap struct {
 }
 
 func Wrap(err error, code ErrorCode, message string) error {
+	if err == nil {
+		return nil
+	}
 	// NOTE: programCountersを保持している場合は引き継ぐ.
 	if e, ok := err.(interface{ programCounters() programCounters }); ok {
 		return &wrap{err, code, message, e.programCounters()}

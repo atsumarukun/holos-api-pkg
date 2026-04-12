@@ -22,12 +22,16 @@ func TestWrap_Wrap(t *testing.T) {
 	}{
 		{name: "basic", inputErr: err, inputCode: errors.CodeUnknown, inputMessage: "test error", expectErr: "UNKNOWN: test error: cause error", expectCause: err},
 		{name: "empty message", inputErr: err, inputCode: errors.CodeUnknown, inputMessage: "", expectErr: "UNKNOWN: : cause error", expectCause: err},
+		{name: "nil", inputErr: nil, inputCode: errors.CodeUnknown, inputMessage: "", expectErr: "", expectCause: nil},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := errors.Wrap(tt.inputErr, tt.inputCode, tt.inputMessage)
 
 			if err == nil {
+				if tt.expectCause == nil {
+					return
+				}
 				t.Error("expected error, but got nil")
 			}
 

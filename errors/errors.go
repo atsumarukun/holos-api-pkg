@@ -39,3 +39,7 @@ func (e *err) Code() ErrorCode {
 func (e *err) Message() string {
 	return e.message
 }
+
+func (e *err) programCounters() programCounters {
+	return e.pcs
+}

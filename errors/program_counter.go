@@ -10,13 +10,17 @@ type programCounters []uintptr
 func (pcs programCounters) Format(f fmt.State, verb rune) {
 	switch verb {
 	case 'v', 's':
-		for _, pc := range pcs {
+		for i, pc := range pcs {
 			fn := runtime.FuncForPC(pc - 1)
 			file, line := fn.FileLine(pc - 1)
-			fmt.Fprintf(f, "%s:%d\n", file, line)
+			if i == len(pcs)-1 {
+				fmt.Fprintf(f, "%s:%d", file, line)
+			} else {
+				fmt.Fprintf(f, "%s:%d\n", file, line)
+			}
 		}
 	default:
-		fmt.Fprintf(f, "%%!%c(%T=%v)\n", verb, pcs, pcs)
+		fmt.Fprintf(f, "%%!%c(%T=%v)", verb, pcs, pcs)
 	}
 }
 

@@ -1,6 +1,7 @@
 package errors_test
 
 import (
+	stderr "errors"
 	"fmt"
 	"strings"
 	"testing"
@@ -8,32 +9,41 @@ import (
 	"github.com/atsumarukun/holos-api-pkg/errors"
 )
 
-func TestErr_New(t *testing.T) {
+func TestWrap_Wrap(t *testing.T) {
+	err := stderr.New("cause error")
+
 	tests := []struct {
 		name         string
+		inputErr     error
 		inputCode    errors.ErrorCode
 		inputMessage string
-		expect       string
+		expectErr    string
+		expectCause  error
 	}{
-		{name: "basic", inputCode: errors.CodeUnknown, inputMessage: "test error", expect: "UNKNOWN: test error"},
-		{name: "empty message", inputCode: errors.CodeUnknown, inputMessage: "", expect: "UNKNOWN: "},
+		{name: "basic", inputErr: err, inputCode: errors.CodeUnknown, inputMessage: "test error", expectErr: "UNKNOWN: test error: cause error", expectCause: err},
+		{name: "empty message", inputErr: err, inputCode: errors.CodeUnknown, inputMessage: "", expectErr: "UNKNOWN: : cause error", expectCause: err},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := errors.New(tt.inputCode, tt.inputMessage)
+			err := errors.Wrap(tt.inputErr, tt.inputCode, tt.inputMessage)
 
 			if err == nil {
 				t.Error("expected error, but got nil")
 			}
 
-			if err.Error() != tt.expect {
-				t.Errorf("expected %s, but got %s", tt.expect, err.Error())
+			if err.Error() != tt.expectErr {
+				t.Errorf("expected %s, but got %s", tt.expectErr, err.Error())
+			}
+
+			cause := stderr.Unwrap(err)
+			if !stderr.Is(cause, tt.expectCause) {
+				t.Errorf("expected %v, but got %v", tt.expectCause, cause)
 			}
 		})
 	}
 }
 
-func TestErr_Format(t *testing.T) {
+func TestWrap_Format(t *testing.T) {
 	tests := []struct {
 		name        string
 		inputFormat string
@@ -43,7 +53,7 @@ func TestErr_Format(t *testing.T) {
 			name:        "%s",
 			inputFormat: "%s",
 			checkFunc: func(t *testing.T, result string) {
-				expect := "UNKNOWN: test error"
+				expect := "UNKNOWN: test error: cause error"
 				if result != expect {
 					t.Errorf("expected %s, but got %s", expect, result)
 				}
@@ -53,7 +63,7 @@ func TestErr_Format(t *testing.T) {
 			name:        "%v",
 			inputFormat: "%v",
 			checkFunc: func(t *testing.T, result string) {
-				expect := "UNKNOWN: test error"
+				expect := "UNKNOWN: test error: cause error"
 				if result != expect {
 					t.Errorf("expected %s, but got %s", expect, result)
 				}
@@ -63,7 +73,7 @@ func TestErr_Format(t *testing.T) {
 			name:        "%+v",
 			inputFormat: "%+v",
 			checkFunc: func(t *testing.T, result string) {
-				if !strings.HasPrefix(result, "UNKNOWN: test error") {
+				if !strings.HasPrefix(result, "UNKNOWN: test error: cause error") {
 					t.Error("no message")
 				}
 				if !strings.Contains(result, ".go:") {
@@ -75,7 +85,7 @@ func TestErr_Format(t *testing.T) {
 			name:        "invalid verb",
 			inputFormat: "%d",
 			checkFunc: func(t *testing.T, result string) {
-				if result != "%!d(*errors.err=UNKNOWN: test error)" {
+				if result != "%!d(*errors.wrap=UNKNOWN: test error: cause error)" {
 					t.Errorf("no format error message")
 				}
 			},
@@ -83,13 +93,13 @@ func TestErr_Format(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := errors.New(errors.CodeUnknown, "test error")
+			err := errors.Wrap(stderr.New("cause error"), errors.CodeUnknown, "test error")
 			tt.checkFunc(t, fmt.Sprintf(tt.inputFormat, err))
 		})
 	}
 }
 
-func TestErr_Code(t *testing.T) {
+func TestWrap_Code(t *testing.T) {
 	tests := []struct {
 		name       string
 		inputCode  errors.ErrorCode
@@ -107,7 +117,7 @@ func TestErr_Code(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := errors.New(tt.inputCode, "test error")
+			err := errors.Wrap(stderr.New("cause error"), tt.inputCode, "test error")
 
 			e, ok := err.(interface {
 				Code() errors.ErrorCode
@@ -123,7 +133,7 @@ func TestErr_Code(t *testing.T) {
 	}
 }
 
-func TestErr_Message(t *testing.T) {
+func TestWrap_Message(t *testing.T) {
 	tests := []struct {
 		name          string
 		inputMessage  string
@@ -134,7 +144,7 @@ func TestErr_Message(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := errors.New(errors.CodeUnknown, tt.inputMessage)
+			err := errors.Wrap(stderr.New("cause error"), errors.CodeUnknown, tt.inputMessage)
 
 			e, ok := err.(interface {
 				Message() string

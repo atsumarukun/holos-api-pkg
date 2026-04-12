@@ -1,8 +1,6 @@
 package errors
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type err struct {
 	code    ErrorCode
@@ -25,10 +23,10 @@ func (e *err) Format(f fmt.State, verb rune) {
 		case f.Flag('+'):
 			fmt.Fprintf(f, "%s\n\n%v", e.Error(), e.pcs)
 		default:
-			fmt.Fprintln(f, e.Error())
+			fmt.Fprint(f, e.Error())
 		}
 	default:
-		fmt.Fprintf(f, "%%!%c(%T=%v)\n", verb, e, e.Error())
+		fmt.Fprintf(f, "%%!%c(%T=%v)", verb, e, e.Error())
 	}
 }
 
@@ -38,4 +36,8 @@ func (e *err) Code() ErrorCode {
 
 func (e *err) Message() string {
 	return e.message
+}
+
+func (e *err) programCounters() programCounters {
+	return e.pcs
 }

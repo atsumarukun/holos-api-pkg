@@ -104,7 +104,7 @@ func TestErr_Format(t *testing.T) {
 			name:        "%s",
 			inputFormat: "%s",
 			checkFunc: func(t *testing.T, result string) {
-				expect := "UNKNOWN: test error\n"
+				expect := "UNKNOWN: test error"
 				if result != expect {
 					t.Errorf("expected %s, but got %s", expect, result)
 				}
@@ -114,7 +114,7 @@ func TestErr_Format(t *testing.T) {
 			name:        "%v",
 			inputFormat: "%v",
 			checkFunc: func(t *testing.T, result string) {
-				expect := "UNKNOWN: test error\n"
+				expect := "UNKNOWN: test error"
 				if result != expect {
 					t.Errorf("expected %s, but got %s", expect, result)
 				}
@@ -136,7 +136,7 @@ func TestErr_Format(t *testing.T) {
 			name:        "invalid verb",
 			inputFormat: "%d",
 			checkFunc: func(t *testing.T, result string) {
-				if result != "%!d(*errors.err=UNKNOWN: test error)\n" {
+				if result != "%!d(*errors.err=UNKNOWN: test error)" {
 					t.Errorf("no format error message")
 				}
 			},

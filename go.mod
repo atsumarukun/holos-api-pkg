@@ -1,3 +1,3 @@
 module github.com/atsumarukun/holos-api-pkg
 
-go 1.24.13
+go 1.27.3

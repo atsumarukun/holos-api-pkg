@@ -31,6 +31,7 @@ linters:
     goconst:
       min-len: 3
       min-occurrences: 3
+      ignore-tests: true
     gocritic:
       enabled-tags:
         - performance
